@@ -6,23 +6,40 @@ __author__ = 'shine'
 import urllib.request
 import re
 import csv
+from datetime import datetime
 import codecs
 
+
 # def getlist() :
+#
 #     html = urllib.request.urlopen('http://bidding.sztu.edu.cn/xxgk/xqgs.htm').read()
 #     html = html.decode('utf8')
+#     # print(html)
 #
-#     reg = re.compile(r'<h2 class="cleafix"><a href="(.*?)" target="_blank" title=".*?">(.*?)</a><span class="time">(.*?)</span></h2>')
+#
+#     reg = re.compile(r'<a href="(.*?)" target="_blank" title=".*?">(.*?)</a><span class="time">(.*?)</span>')
+#     # mat = re.search(r'<span class="time">(.*?)</span>',html)
 #     urls = re.findall(reg,html)
 #     # print((urls))
+#     # print(mat)
 #     for url in urls:
-#         zx=("http://bidding.sztu.edu.cn"+url[0])
-#         zt=url[1]
+#
+#         s=url[0].replace("../../","/")
+#         s1=s.replace("../","/")
+#         link=("http://bidding.sztu.edu.cn"+s1)
+#         subject=url[1]
 #         time=url[2]
 #         datas = [([subject,link,time])]
 #         print(datas)
 
 def getlist() :
+    # linkurl=http://bidding.sztu.edu.cn/xxgk/xqgs.htm
+    # for i in range(0,1):
+    #     if i=0:
+    #     linkurl=http://bidding.sztu.edu.cn/xxgk/xqgs.htm
+    # else:
+    #     linkurl=http://bidding.sztu.edu.cn/xxgk/xqgs+%i.htm
+
     html = urllib.request.urlopen('http://bidding.sztu.edu.cn/xxgk/xqgs.htm').read()
     html = html.decode('utf8')
     # print(html)
@@ -32,9 +49,10 @@ def getlist() :
     urls = re.findall(reg,html)
     # print((urls))
     for url in urls:
-        # global zx,zt
-        # global datas
-        link=("http://bidding.sztu.edu.cn"+url[0])
+
+        s=url[0].replace("../../","/")
+        s1=s.replace("../","/")
+        link=("http://bidding.sztu.edu.cn"+s1)
         subject=url[1]
         datas = [([subject,link])]
         print(datas)

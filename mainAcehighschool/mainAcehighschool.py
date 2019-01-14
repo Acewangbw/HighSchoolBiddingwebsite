@@ -56,58 +56,40 @@ def url_open(url):
 def make_record_file():
     # w方法的打开方式是清空之前的内容
     csv = open(saved_filename,'w')
-    csv.write('采购类型,发布时间,地域,采购单位\n')
+    csv.write('标题,采购类型,发布时间,地域,采购单位,网址\n')
     csv.close()
 
 # 向csv文件中追加一条记录
-def record_info( btype, date, province, agency):
+def record_info( title, btype, date, province, agency, links):
     # a方法的打开方式是追加的方式
     csv = open(saved_filename,'a')
-    csv.write('%s,%s,%s,%s,\n'%( btype, date, province, agency))
+    csv.write('%s,%s,%s,%s,%s,%s\n'%( title, btype, date, province, agency,links))
     csv.close()
 
-# 根据html获取对应的记录并保存
 def fetch_info(html):
-
     soup = BeautifulSoup(html,"html.parser")
-
-    # soup = BeautifulSoup(open('cache1.html'),'html5lib')
-    # 根据网页内容，获取特定的ul标签
-
-
     ul_tag = soup.find(name='ul',attrs={'class':"c_list_bid"})
-    # reg = re.compile(r'<a href="(.*?)" target="_blank" title=".*?">(.*?)</a>')
-    # urls = re.findall(reg,html)
-    # for url in urls:
-    #     zx=url[0]
-    #     print(zx)
-    li = soup.find(name='li',attrs={'class':"c_list_bid"})
-    # 遍历ul标签下所有的li标签
-    for li_tag in ul_tag.find_all(li,ul):
-
-        # title = li_tag.title.split()
-        # return title.encode('utf8')
+# 根据html获取对应的记录并保存
+    for li_tag in ul_tag.find_all('li'):
+        title=li_tag.find('a').get('title')
+        link = li_tag.find('a').get('href')
+        links = urllib.parse.urljoin("http://www.ccgp.gov.cn/cggg/dfgg/", link)
 
         # 准备获取其它内容
         em = li_tag.find_all('em')
 
         # 从第一个em标签中获取类型，此处需要根据type_dict将代码转换为对应的文字类型
         btype = type_dict[em[0].string]
-
         # 从第二个em标签中获取日期时间
         date = em[1].string
-
         # 从第三个em标签中获取地点（省份）
         province = em[2].string
-
         # 从第四个em标签中获取采购人（机构）
         agency = em[3].string
-
         # href = url_prefix+li_tag.href.split()
         # return href.encode('utf8')
         # 将这些信息保存在文件中
-        record_info( btype, date, province, agency)
-
+        record_info( title, btype, date, province, agency, links)
 
 # 依次处理每一页
 def process():
@@ -142,7 +124,7 @@ if __name__== '__main__':
     saved_filename = 'result.csv'
 
     # 两次抓取的间隔时间（秒）, 我看到上面你用了代理，所以这儿可以设的短一些，2秒即可,这样25页50秒就可以完成
-    waiting_seconds = 5
+    waiting_seconds = 2
 
     # 网页前缀
     url_prefix = "http://www.ccgp.gov.cn/cggg/dfgg/index"
